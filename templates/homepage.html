@@ -1,17 +1,118 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <title>Clip</title>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet">
-</head>
-<body>
+  <head>
+    <title>Home Clip</title>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="{{ url_for('static', filename='css/output.css') }}"
+      rel="stylesheet"
+    />
+  </head>
+  <body
+    onload="getLinks()"
+    class="flex flex-col items-center h-screen justify-center gap-3"
+  >
+    <div>
+      <a onclick="addLink()">
+        <button class="bg-neutral-900 text-white font-bold p-2 rounded-2xl">
+          Add New Link
+        </button>
+      </a>
+    </div>
 
-<h1 class="text-9xl text-center">
-    Hello
-</h1>
+    <div
+      class="absolute bg-blue-600 p-2 hidden transition-all"
+      id="newLinkForm"
+    >
+      <form
+        method="post"
+        action="{{ url_for('add_link') }}"
+        class="flex flex-col gap-2"
+      >
+        <label class="bg-green-950 text-white"
+          >Title:
+          <input type="text" name="title" placeholder="Title" />
+        </label>
+        <label class="bg-green-950 text-white"
+          >Link:
+          <input type="text" name="link" placeholder="Link" />
+        </label>
+        <div class="flex flex-row gap-1 w-full">
+          <button
+            class="bg-black text-white rounded-2xl p-1"
+            onclick="cancelAddLink()"
+            type="button"
+          >
+            Cancel
+          </button>
+          <button type="submit" class="bg-black text-white rounded-2xl p-1">
+            Submit
+          </button>
+        </div>
+      </form>
+    </div>
 
-</body>
+    <ul
+      id="listOfLinks"
+      class="bg-pink-600 min-w-120 max-w-120 flex flex-col gap-2 p-2"
+    ></ul>
+  </body>
 </html>
+
+<script>
+  function getLinks() {
+    fetch("allLinks")
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Uhoh cant get links");
+        }
+      })
+      .then((data) => {
+        if (data.length > 0 ) {
+            showLinks(data);
+        } else {
+            let list = document.getElementById("listOfLinks")
+            let li = document.createElement("li");
+            li.className = "bg-stone-950"
+            li.innerHTML = `<h2 class="text-2xl font-bold text-white">Add a link to get started!</h2>`
+            list.appendChild(li)
+        }
+      })
+      .catch((error) => console.error("Fetch error:", error));
+  }
+
+  function showLinks(data) {
+    let list = document.getElementById("listOfLinks");
+    for (i = 0; i < data.length; i++) {
+      let li = document.createElement("li");
+      li.className = "bg-stone-950";
+      li.innerHTML = `<h2 class='text-2xl font-bold text-white'>${data[i].title}</h2>
+                <p class="text-lg font-bold text-white">${data[i].link}</p>
+                <form method="post" action="{{ url_for('delete_link') }}">
+                    <input type="hidden" name="id" value="${data[i].id}">
+                    <button type="submit" class="bg-black text-white rounded-2xl p-1">
+                    Delete
+                    </button>
+                </form>
+            `;
+      list.appendChild(li);
+    }
+  }
+
+  function addLink() {
+    const form = document.getElementById("newLinkForm");
+    if (form.classList.contains("hidden")) {
+      form.classList.remove("hidden");
+      form.querySelector("form").reset();
+    }
+  }
+  function cancelAddLink() {
+    const form = document.getElementById("newLinkForm");
+    form.classList.add("hidden");
+  }
+</script>
+
