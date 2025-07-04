@@ -4,14 +4,16 @@ import sqlite3
 
 from database.setup_db import setup_db
 from routes.linkCrud import addLink_bp, editLink_bp, deleteLink_bp, updateLinkClick_bp
-from routes.linkRetrieve import allLinks_bp, getLinkData_bp, getFilteredTags_bp
+from routes.linkRetrieve import allLinks_bp, getLinkData_bp, getFilteredTags_bp, getTagData_bp, topFiveClicks_bp
 
 app = Flask(__name__)
 
 setup_db()
 
+# THIS IS SO STUPID ISTG, but it works!
 #Retrieval Functions
 app.register_blueprint(allLinks_bp, url_prefix='/api')
+app.register_blueprint(topFiveClicks_bp, url_prefix='/api')
 app.register_blueprint(getLinkData_bp, url_prefix='/api')
 app.register_blueprint(getFilteredTags_bp, url_prefix='/api')
 
@@ -20,6 +22,7 @@ app.register_blueprint(addLink_bp, url_prefix='/api')
 app.register_blueprint(editLink_bp, url_prefix='/api')
 app.register_blueprint(deleteLink_bp, url_prefix='/api')
 app.register_blueprint(updateLinkClick_bp, url_prefix='/api')
+app.register_blueprint(getTagData_bp, url_prefix='/tags')
 
 @app.route('/')
 def hello_world():
@@ -36,18 +39,12 @@ def folders():
     except:
         abort(404)
 
-@app.route("/tag/<int:tagId>")
-def tag(tagId):
+@app.route('/tags')
+def tags():
     try:
-        conn = sqlite3.connect('links.db')
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM Links WHERE TagId = ?", (tagId,))
-        links = cur.fetchall()
-        conn.close()
-        return jsonify(links)
+        return render_template("tags.html")
     except:
         abort(404)
-
 
 
 

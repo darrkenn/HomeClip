@@ -1,17 +1,29 @@
 import sqlite3
 
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, abort, render_template
 
 from database.getLinks import final_links
 
 allLinks_bp = Blueprint('allLinks', __name__)
+topFiveClicks_bp = Blueprint('topFiveClicks', __name__)
 getLinkData_bp = Blueprint('getLinkData', __name__)
 getFilteredTags_bp = Blueprint('getFilteredTags', __name__)
+getTagData_bp = Blueprint('getTagData', __name__)
 @allLinks_bp.route('/allLinks')
 def all_links():
     conn = sqlite3.connect('links.db')
     c = conn.cursor()
     c.execute("SELECT l.LinkId, l.Title, l.Link, t.tag, f.Folder FROM Links as l LEFT JOIN Tags as t on L.TagId = t.TagId LEFT JOIN Folders as f on l.FolderId = f.FolderId")
+    links = c.fetchall()
+    c.close()
+    conn.close()
+    return jsonify(final_links(links))
+
+@topFiveClicks_bp.route('/topFiveClicks')
+def top_five_clicks():
+    conn = sqlite3.connect('links.db')
+    c = conn.cursor()
+    c.execute("SELECT l.LinkId, l.Title, l.Link, t.Tag, l.Clicks FROM Links as l LEFT JOIN Tags as t on L.TagId = t.TagId ORDER BY l.Clicks DESC LIMIT 5")
     links = c.fetchall()
     c.close()
     conn.close()
@@ -38,3 +50,15 @@ def get_filtered_tags():
         if tag not in individualTags:
             individualTags.append(tag)
     return jsonify(individualTags)
+
+@getTagData_bp.route('/<int:tagId>', methods=['GET'])
+def tag(tagId):
+    try:
+        conn = sqlite3.connect('links.db')
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM Links WHERE TagId = ?", (tagId,))
+        links = cur.fetchall()
+        conn.close()
+        return render_template("tag.html", links=final_links(links))
+    except:
+        abort(404)

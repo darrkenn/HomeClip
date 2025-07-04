@@ -10,14 +10,14 @@
       rel="stylesheet"
     />
   </head>
-  <body onload="getLinks()" class="flex flex-row items-center h-screen w-screen  gap-3 bg-nice-bg">
+  <body onload="getLinks()" class="flex flex-row  h-screen w-screen  gap-3 bg-nice-bg">
 
-  <div class="w-1/6 bg-nice-footer h-full flex flex-col">
-
+  <div class="w-1/6 bg-nice-footer h-full flex flex-col gap-4 items-center">
       <h1 class="text-center text-white text-4xl pt-4 font-extrabold">HomeClip</h1>
-
+      <form method="post" onkeydown="" autocomplete="off">
+          <input class="bg-white p-0.5" type="text" name="searchValue">
+      </form>
   </div>
-
   <div class="flex flex-col w-full justify-center h-full items-center">
       <div>
           <a onclick="addLink()">
@@ -88,7 +88,7 @@
 
 <script>
   function getLinks() {
-    fetch("/api/allLinks")
+    fetch("/api/topFiveClicks")
       .then((response) => {
         if (response.ok) {
           return response.json();
