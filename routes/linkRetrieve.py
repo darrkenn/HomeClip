@@ -11,7 +11,7 @@ getFilteredTags_bp = Blueprint('getFilteredTags', __name__)
 def all_links():
     conn = sqlite3.connect('links.db')
     c = conn.cursor()
-    c.execute("SELECT * FROM Links")
+    c.execute("SELECT l.LinkId, l.Title, l.Link, t.tag, f.Folder FROM Links as l LEFT JOIN Tags as t on L.TagId = t.TagId LEFT JOIN Folders as f on l.FolderId = f.FolderId")
     links = c.fetchall()
     c.close()
     conn.close()
@@ -21,7 +21,7 @@ def all_links():
 def get_link_data(id):
     conn = sqlite3.connect('links.db')
     c = conn.cursor()
-    c.execute("SELECT * FROM Links WHERE id = ?", (id,))
+    c.execute("SELECT l.LinkId, l.Title, l.Link, t.Tag, f.Folder FROM Links as l LEFT JOIN Tags as t on l.TagId = t.TagId LEFT JOIN Folders as f on l.FolderId = f.FolderId WHERE LinkId = ?", (id,))
     link = c.fetchone()
     c.close()
     conn.close()
@@ -31,7 +31,7 @@ def get_link_data(id):
 def get_filtered_tags():
     conn = sqlite3.connect('links.db')
     c = conn.cursor()
-    c.execute("SELECT Tag FROM Links")
+    c.execute("SELECT t.Tag FROM Tags as l LEFT JOIN Tags as t on l.TagId = t.TagId")
     tags = c.fetchall()
     individualTags = []
     for tag in tags:

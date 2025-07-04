@@ -3,7 +3,7 @@ import sqlite3
 
 
 from database.setup_db import setup_db
-from routes.linkCrud import addLink_bp, editLink_bp, deleteLink_bp
+from routes.linkCrud import addLink_bp, editLink_bp, deleteLink_bp, updateLinkClick_bp
 from routes.linkRetrieve import allLinks_bp, getLinkData_bp, getFilteredTags_bp
 
 app = Flask(__name__)
@@ -19,6 +19,7 @@ app.register_blueprint(getFilteredTags_bp, url_prefix='/api')
 app.register_blueprint(addLink_bp, url_prefix='/api')
 app.register_blueprint(editLink_bp, url_prefix='/api')
 app.register_blueprint(deleteLink_bp, url_prefix='/api')
+app.register_blueprint(updateLinkClick_bp, url_prefix='/api')
 
 @app.route('/')
 def hello_world():
@@ -27,14 +28,25 @@ def hello_world():
     except:
         abort(404)
 
-@app.route("/tag/<string:tag>")
-def tag(tag):
-    conn = sqlite3.connect('links.db')
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM links WHERE tag = ?", (tag,))
-    links = cur.fetchall()
-    conn.close()
-    return jsonify(links)
+
+@app.route('/folders')
+def folders():
+    try:
+        return render_template("folders.html")
+    except:
+        abort(404)
+
+@app.route("/tag/<int:tagId>")
+def tag(tagId):
+    try:
+        conn = sqlite3.connect('links.db')
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM Links WHERE TagId = ?", (tagId,))
+        links = cur.fetchall()
+        conn.close()
+        return jsonify(links)
+    except:
+        abort(404)
 
 
 
