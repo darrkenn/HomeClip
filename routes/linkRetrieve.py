@@ -1,0 +1,40 @@
+import sqlite3
+
+from flask import Blueprint, jsonify
+
+from database.getLinks import final_links
+
+allLinks_bp = Blueprint('allLinks', __name__)
+getLinkData_bp = Blueprint('getLinkData', __name__)
+getFilteredTags_bp = Blueprint('getFilteredTags', __name__)
+@allLinks_bp.route('/allLinks')
+def all_links():
+    conn = sqlite3.connect('links.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM Links")
+    links = c.fetchall()
+    c.close()
+    conn.close()
+    return jsonify(final_links(links))
+
+@getLinkData_bp.route('/getLinkData/<int:id>', methods=['GET'])#
+def get_link_data(id):
+    conn = sqlite3.connect('links.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM Links WHERE id = ?", (id,))
+    link = c.fetchone()
+    c.close()
+    conn.close()
+    return jsonify(link)
+
+@getFilteredTags_bp.route('/getFilteredTags/', methods=['GET'])
+def get_filtered_tags():
+    conn = sqlite3.connect('links.db')
+    c = conn.cursor()
+    c.execute("SELECT Tag FROM Links")
+    tags = c.fetchall()
+    individualTags = []
+    for tag in tags:
+        if tag not in individualTags:
+            individualTags.append(tag)
+    return jsonify(individualTags)

@@ -10,60 +10,75 @@
       rel="stylesheet"
     />
   </head>
-  <body
-    onload="getLinks()"
-    class="flex flex-col items-center h-screen justify-center gap-3"
-  >
+  <body onload="getLinks()" class="flex flex-col items-center h-screen justify-center gap-3 bg-nice-bg">
     <div>
       <a onclick="addLink()">
-        <button class="bg-neutral-900 text-white font-bold p-2 rounded-2xl">
+          <button class="bg-nice-footer text-white font-bold p-2 rounded-2xl">
           Add New Link
         </button>
       </a>
     </div>
 
-    <div
-      class="absolute bg-blue-600 p-2 hidden transition-all"
-      id="newLinkForm"
-    >
-      <form
-        method="post"
-        action="{{ url_for('add_link') }}"
-        class="flex flex-col gap-2"
-      >
-        <label class="bg-green-950 text-white"
-          >Title:
-          <input type="text" name="title" placeholder="Title" />
-        </label>
-        <label class="bg-green-950 text-white"
-          >Link:
-          <input type="text" name="link" placeholder="Link" />
-        </label>
-        <div class="flex flex-row gap-1 w-full">
-          <button
-            class="bg-black text-white rounded-2xl p-1"
-            onclick="cancelAddLink()"
-            type="button"
-          >
-            Cancel
-          </button>
-          <button type="submit" class="bg-black text-white rounded-2xl p-1">
-            Submit
-          </button>
+    <div class="absolute bg-nice-footer hidden border-3 rounded-2xl border-white p-2 transition-all pointer-events-auto z-50" id="newLinkForm">
+        <div class="flex flex-row border-b-2 border-white w-full">
+            <div class="w-1/2"><h1 class="text-white text-2xl font-extrabold">New Link</h1></div>
+            <div class="w-1/2 justify-end flex"><button class="text-white text-lg p-1 font-bold hover:cursor-pointer" onclick="cancelAddLink()">Cancel</button></div>
         </div>
-      </form>
+        <form method="post" action="{{ url_for('addLink.add_link') }}" class="flex flex-col gap-2 pt-2" autocomplete="off">
+            <div class="flex flex-row">
+                <div class="flex flex-col w-1/4 gap-2 text-white font-bold">
+                    <label class="p-0.5">Title:</label>
+                    <label class="p-0.5">Link:</label>
+                    <label class="p-0.5">Tag:</label>
+                </div>
+                <div class="flex flex-col w-full gap-2 text-black">
+                    <input class="bg-white p-0.5" type="text" name="title" placeholder="Title" required />
+                    <input class="bg-white p-0.5" type="text" name="link" placeholder="Link" pattern="https?://.+" required />
+                    <input class="bg-white p-0.5" type="text" name="tag" placeholder="Tag">
+                </div>
+            </div>
+            <div class="flex flex-row items-center justify-center gap-1 w-full">
+                <button type="submit" class="bg-white text-black font-bold rounded-2xl p-2 hover:cursor-pointer">
+                    Submit
+                </button>
+            </div>
+        </form>
     </div>
 
-    <ul
-      id="listOfLinks"
-      class="bg-pink-600 min-w-120 max-w-120 flex flex-col gap-2 p-2"
-    ></ul>
+    <div class="absolute bg-nice-footer hidden border-3 rounded-2xl border-white p-2 transition-all pointer-events-auto z-50" id="editLinkForm">
+        <div class="flex flex-row border-b-2 border-white w-full">
+            <div class="w-1/2"><h1 class="text-white text-2xl font-extrabold">Edit Link</h1></div>
+            <div class="w-1/2 justify-end flex"><button class="text-white text-lg p-1 font-bold hover:cursor-pointer" onclick="cancelEditLink()">Cancel</button></div>
+        </div>
+        <form method="post" action="{{ url_for('editLink.edit_link') }}" class="flex flex-col gap-2 pt-2" autocomplete="off">
+            <div class="flex flex-row">
+                <div class="flex flex-col w-1/4 gap-2 text-white font-bold">
+                    <label class="p-0.5">Title:</label>
+                    <label class="p-0.5">Link:</label>
+                    <label class="p-0.5">Tag:</label>
+                </div>
+                <div class="flex flex-col w-full gap-2 text-black">
+                    <input class="hidden" type="number" id="editID" name="id">
+                    <input class="bg-white p-0.5" id="editTitle" type="text" name="title" placeholder="Title" required />
+                    <input class="bg-white p-0.5" id="editLink" type="text" name="link" placeholder="Link" pattern="https?://.+" required />
+                    <input class="bg-white p-0.5" id="editTag" type="text" name="tag" placeholder="Tag">
+                </div>
+            </div>
+            <div class="flex flex-row items-center justify-center gap-1 w-full">
+                <button type="submit" class="bg-white text-black font-bold rounded-2xl p-2 hover:cursor-pointer">
+                    Submit
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <ul id="listOfLinks" class="min-w-160 max-w-160 flex flex-col gap-2 p-2"></ul>
   </body>
 </html>
 
 <script>
   function getLinks() {
-    fetch("allLinks")
+    fetch("/api/allLinks")
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -85,19 +100,47 @@
       .catch((error) => console.error("Fetch error:", error));
   }
 
+  function getLinkData(test) {
+      fetch(`/api/getLinkData/${test}`)
+          .then((response) =>{
+              if (response.ok) {
+                  return response.json();
+              } else {
+                  throw new Error("Uhoh cant get link data");
+              }
+          })
+            .then((data) => {
+                    editLink(data)
+            })
+          .catch((error) => console.error("Fetch error:", error));
+  }
+
   function showLinks(data) {
     let list = document.getElementById("listOfLinks");
     for (i = 0; i < data.length; i++) {
       let li = document.createElement("li");
-      li.className = "bg-stone-950";
-      li.innerHTML = `<h2 class='text-2xl font-bold text-white'>${data[i].title}</h2>
-                <p class="text-lg font-bold text-white">${data[i].link}</p>
-                <form method="post" action="{{ url_for('delete_link') }}">
-                    <input type="hidden" name="id" value="${data[i].id}">
-                    <button type="submit" class="bg-black text-white rounded-2xl p-1">
-                    Delete
-                    </button>
-                </form>
+      li.className = "bg-stone-950 rounded-2xl";
+      li.innerHTML = `
+                <div class="flex flex-row">
+                    <a href="${data[i].link}" target="_blank" class="w-full p-3">
+                        <div class="flex-col flex">
+                            <h2 class='text-2xl font-extrabold text-white'>${data[i].title}</h2>
+                            <h3 class="text-white opacity-80 font-bold">${data[i].tag}</h3>
+                        </div>
+                    </a>
+                    <div class="flex flex-col justify-end p-2 gap-2">
+                        <form method="post" action="{{ url_for("deleteLink.delete_link") }}">
+                            <input type="hidden" name="id" value="${data[i].id}">
+                            <button type="submit" class="hover:cursor-pointer">
+                                <img src="/static/svg/deleteDark.svg" alt="Delete SVG" class="size-6">
+                            </button>
+                        </form>
+                            <button class="hover:cursor-pointer" onClick="getLinkData(${data[i].id})">
+                                <img src="/static/svg/editDark.svg" alt="Edit SVG" class="size-6">
+                            </button>
+                    </div>
+                    {#<div class="w-1/2"><h2 class="text-lg font-bold text-gray-200 text-right pr-8">Tag:${data[i].tag}</h2></div>#}
+                </div>
             `;
       list.appendChild(li);
     }
@@ -105,14 +148,42 @@
 
   function addLink() {
     const form = document.getElementById("newLinkForm");
+    const links = document.getElementById("listOfLinks")
     if (form.classList.contains("hidden")) {
       form.classList.remove("hidden");
+      links.classList.add("pointer-events-none")
       form.querySelector("form").reset();
     }
   }
   function cancelAddLink() {
     const form = document.getElementById("newLinkForm");
+    const links = document.getElementById("listOfLinks")
     form.classList.add("hidden");
+    links.classList.remove("pointer-events-none")
   }
+
+  function editLink(data) {
+      const editDiv = document.getElementById("editLinkForm");
+      const links = document.getElementById("listOfLinks")
+      if (editDiv.classList.contains("hidden")) {
+          editDiv.classList.remove("hidden");
+          links.classList.add("pointer-events-none")
+          editDiv.querySelector("form").reset();
+          document.getElementById("editID").value=data[0]
+          document.getElementById("editTitle").value=data[1]
+          document.getElementById("editLink").value=data[2]
+          document.getElementById("editTag").value=data[3]
+
+      }
+  }
+  function cancelEditLink() {
+    const form = document.getElementById("editLinkForm");
+    const links = document.getElementById("listOfLinks")
+    form.classList.add("hidden");
+    links.classList.remove("pointer-events-none")
+  }
+
+
+
 </script>
 

@@ -1,53 +1,42 @@
-from flask import Flask, render_template, jsonify, request, redirect
+from flask import Flask, render_template, jsonify, request, redirect, abort
 import sqlite3
 
-from database.getLinks import final_links
+
 from database.setup_db import setup_db
+from routes.linkCrud import addLink_bp, editLink_bp, deleteLink_bp
+from routes.linkRetrieve import allLinks_bp, getLinkData_bp, getFilteredTags_bp
 
 app = Flask(__name__)
 
 setup_db()
 
+#Retrieval Functions
+app.register_blueprint(allLinks_bp, url_prefix='/api')
+app.register_blueprint(getLinkData_bp, url_prefix='/api')
+app.register_blueprint(getFilteredTags_bp, url_prefix='/api')
+
+#CRUD Functions
+app.register_blueprint(addLink_bp, url_prefix='/api')
+app.register_blueprint(editLink_bp, url_prefix='/api')
+app.register_blueprint(deleteLink_bp, url_prefix='/api')
+
 @app.route('/')
 def hello_world():
-    return render_template("homepage.html")
+    try:
+        return render_template("homepage.html")
+    except:
+        abort(404)
 
-
-@app.route('/allLinks', methods=['GET'])
-def get_all_links():
+@app.route("/tag/<string:tag>")
+def tag(tag):
     conn = sqlite3.connect('links.db')
-    c = conn.cursor()
-    c.execute("SELECT * FROM Links")
-    links = c.fetchall()
-    c.close()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM links WHERE tag = ?", (tag,))
+    links = cur.fetchall()
     conn.close()
-    return jsonify(final_links(links))
+    return jsonify(links)
 
-@app.route('/addLink', methods=['POST'])
-def add_link():
-    if request.method == 'POST':
-        title = request.form['title']
-        link = request.form['link']
-        conn = sqlite3.connect('links.db')
-        c = conn.cursor()
-        c.execute("INSERT INTO Links VALUES (NULL, ?, ?)", (title, link))
-        conn.commit()
-        conn.close()
-        return redirect("/")
-    return None
 
-@app.route('/deleteLink', methods=['POST'])
-def delete_link():
-    if request.method == 'POST':
-        link_id = request.form['id']
-        conn = sqlite3.connect('links.db')
-        c = conn.cursor()
-        print(link_id)
-        c.execute("DELETE FROM Links WHERE id = ?", (link_id,))
-        conn.commit()
-        conn.close()
-        return redirect("/")
-    return None
 
 
 if __name__ == '__main__':
