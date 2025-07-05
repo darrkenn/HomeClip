@@ -10,6 +10,7 @@ from routes.linkRetrieve import (
     getTagData_bp,
     topFiveClicks_bp, getSearchResults_bp,
 )
+from routes.search import showResults
 
 app = Flask(__name__)
 
@@ -30,7 +31,7 @@ app.register_blueprint(updateLinkClick_bp, url_prefix="/api")
 app.register_blueprint(getTagData_bp, url_prefix="/tags")
 
 @app.route("/")
-def hello_world():
+def home():
     try:
         return render_template("homepage.html")
     except Exception:
@@ -43,8 +44,13 @@ def allLinks():
         return render_template("allLinksPage.html")
     except Exception:
         abort(404)
-
-
+@app.route("/search")
+def search():
+    try:
+        return render_template("search.html")
+    except Exception:
+        abort(404)
+app.register_blueprint(showResults, url_prefix="/search")
 
 @app.route("/folders")
 def folders():
@@ -54,12 +60,6 @@ def folders():
         abort(404)
 
 
-@app.route("/tags")
-def tags():
-    try:
-        return render_template("tags.html")
-    except Exception:
-        abort(404)
 
 
 if __name__ == "__main__":

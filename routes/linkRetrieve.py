@@ -11,6 +11,7 @@ getFilteredTags_bp = Blueprint('getFilteredTags', __name__)
 getTagData_bp = Blueprint('getTagData', __name__)
 getSearchResults_bp = Blueprint('getSearchResults', __name__)
 
+
 @allLinks_bp.route('/allLinks')
 def all_links():
     conn = sqlite3.connect('links.db')
@@ -70,17 +71,26 @@ def get_search_results_title(title):
     conn = sqlite3.connect('links.db')
     c = conn.cursor()
     title = f'{title}%'
-    print(title)
-    c.execute("SELECT l.LinkId, l.Title, l.Link, t.Tag, f.Folder FROM Links as l LEFT JOIN Tags as t on l.TagId = t.TagId LEFT JOIN Folders as f on l.FolderId = f.FolderId WHERE Title LIKE ?", (title,))
+    c.execute("SELECT  Title, Link FROM Links  WHERE Title LIKE ?", (title,))
     links = c.fetchall()
     conn.close()
-    return jsonify(final_links(links))
-
-@getSearchResults_bp.route('/getSearchResults/tag=<tag>', methods=['GET'])
-def get_search_results_tag(tag):
+    return jsonify(links)
+@getSearchResults_bp.route('/getSearchResults/tag=<selectedTag>', methods=['GET'])
+def get_search_results_tag(selectedTag):
     conn = sqlite3.connect('links.db')
     c = conn.cursor()
-    c.execute("SELECT l.LinkId, l.Title, l.Link, t.Tag, f.folder FROM Links as l LEFT JOIN Tags as t on l.TagId = t.TagId LEFT JOIN FOlders as f on l.FolderId = f.FolderId WHERE t.Tag = ?", (tag,))
+    selectedTag = f'{selectedTag}%'
+    c.execute("SELECT Tag From Tags WHERE Tag LIKE ?", (selectedTag,))
     links = c.fetchall()
     conn.close()
-    return jsonify(final_links(links))
+    return jsonify(links)
+@getSearchResults_bp.route('/getSearchResults/folder=<folder>', methods=['GET'])
+def get_search_results_folder(folder):
+    conn = sqlite3.connect('links.db')
+    c = conn.cursor()
+    folder = f'{folder}%'
+    c.execute("SELECT Folder From Folders WHERE Folder LIKE ?", (folder,))
+    links = c.fetchall()
+    conn.close()
+    return jsonify(links)
+
