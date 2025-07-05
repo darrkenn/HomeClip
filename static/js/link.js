@@ -61,7 +61,7 @@ function showLinks(data) {
     let list = document.getElementById("listOfLinks");
     for (i = 0; i < data.length; i++) {
         let li = document.createElement("li");
-        li.className = "bg-stone-950 rounded-2xl";
+        li.className = "bg-stone-950 rounded-2xl w-full";
         if (data[i].tag != null) {
             li.innerHTML = `
                 <div class="flex flex-row">
@@ -160,6 +160,45 @@ function updateLinkClick(linkId) {
         }
     })
 }
+
+function updateAndRetrieveSearchBox() {
+    let list = document.getElementById("searchList")
+    let sV = document.getElementById("searchValue").value;
+    if (list.classList.contains("hidden")) {
+        list.classList.remove("hidden")
+    }
+    if (sV.length > 0) {
+        fetch(`/api/getSearchResults/title=${sV}`)
+            .then((response) => {
+                if (response.ok) {
+                    return response.json()
+                } else {
+                    throw new Error("Uhoh error")
+                }
+            })
+            .then((data) => {
+                updateSearchList(data)
+            })
+
+
+    }
+    if (sV.length === 0) {
+        list.classList.add("hidden")
+        list.innerHTML = ""
+    }
+}
+function updateSearchList(data) {
+    let list = document.getElementById("searchList")
+    list.innerHTML = ""
+    for (let i=0; i < data.length; i++) {
+        let li = document.createElement("li");
+        li.innerHTML = `
+            <h1>${data[i].title}</h1>
+        `;
+        list.appendChild(li)
+    }
+}
+
 
 
 

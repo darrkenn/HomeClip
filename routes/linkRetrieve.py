@@ -9,6 +9,8 @@ topFiveClicks_bp = Blueprint('topFiveClicks', __name__)
 getLinkData_bp = Blueprint('getLinkData', __name__)
 getFilteredTags_bp = Blueprint('getFilteredTags', __name__)
 getTagData_bp = Blueprint('getTagData', __name__)
+getSearchResults_bp = Blueprint('getSearchResults', __name__)
+
 @allLinks_bp.route('/allLinks')
 def all_links():
     conn = sqlite3.connect('links.db')
@@ -62,3 +64,23 @@ def tag(tagId):
         return render_template("tag.html", links=final_links(links))
     except:
         abort(404)
+
+@getSearchResults_bp.route('/getSearchResults/title=<title>', methods=['GET'])
+def get_search_results_title(title):
+    conn = sqlite3.connect('links.db')
+    c = conn.cursor()
+    title = f'{title}%'
+    print(title)
+    c.execute("SELECT l.LinkId, l.Title, l.Link, t.Tag, f.Folder FROM Links as l LEFT JOIN Tags as t on l.TagId = t.TagId LEFT JOIN Folders as f on l.FolderId = f.FolderId WHERE Title LIKE ?", (title,))
+    links = c.fetchall()
+    conn.close()
+    return jsonify(final_links(links))
+
+@getSearchResults_bp.route('/getSearchResults/tag=<tag>', methods=['GET'])
+def get_search_results_tag(tag):
+    conn = sqlite3.connect('links.db')
+    c = conn.cursor()
+    c.execute("SELECT l.LinkId, l.Title, l.Link, t.Tag, f.folder FROM Links as l LEFT JOIN Tags as t on l.TagId = t.TagId LEFT JOIN FOlders as f on l.FolderId = f.FolderId WHERE t.Tag = ?", (tag,))
+    links = c.fetchall()
+    conn.close()
+    return jsonify(final_links(links))

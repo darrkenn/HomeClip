@@ -8,7 +8,7 @@ from routes.linkRetrieve import (
     getLinkData_bp,
     getFilteredTags_bp,
     getTagData_bp,
-    topFiveClicks_bp,
+    topFiveClicks_bp, getSearchResults_bp,
 )
 
 app = Flask(__name__)
@@ -21,14 +21,13 @@ app.register_blueprint(allLinks_bp, url_prefix="/api")
 app.register_blueprint(topFiveClicks_bp, url_prefix="/api")
 app.register_blueprint(getLinkData_bp, url_prefix="/api")
 app.register_blueprint(getFilteredTags_bp, url_prefix="/api")
-
+app.register_blueprint(getSearchResults_bp, url_prefix="/api")
 # CRUD Functions
 app.register_blueprint(addLink_bp, url_prefix="/api")
 app.register_blueprint(editLink_bp, url_prefix="/api")
 app.register_blueprint(deleteLink_bp, url_prefix="/api")
 app.register_blueprint(updateLinkClick_bp, url_prefix="/api")
 app.register_blueprint(getTagData_bp, url_prefix="/tags")
-
 
 @app.route("/")
 def hello_world():
@@ -44,6 +43,7 @@ def allLinks():
         return render_template("allLinksPage.html")
     except Exception:
         abort(404)
+
 
 
 @app.route("/folders")
