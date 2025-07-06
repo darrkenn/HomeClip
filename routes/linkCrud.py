@@ -2,8 +2,6 @@ import sqlite3
 
 from flask import Blueprint, jsonify, request, redirect
 
-from database.getLinks import final_links
-
 addLink_bp = Blueprint('addLink', __name__)
 editLink_bp = Blueprint('editLink', __name__)
 deleteLink_bp = Blueprint('deleteLink', __name__)
@@ -39,6 +37,7 @@ def edit_link():
         link = request.form['link']
         tag = request.form['tag']
         link_id = request.form['id']
+        current_url = request.form['url']
         conn = sqlite3.connect('links.db')
         c = conn.cursor()
         if len(tag) > 0:
@@ -50,19 +49,20 @@ def edit_link():
             c.execute("UPDATE Links SET Title = ?, Link = ?, TagId = NULL WHERE LinkID = ?", (title, link, link_id))
         conn.commit()
         conn.close()
-        return redirect("/")
+        return redirect(current_url)
     return None
 
 @deleteLink_bp.route('/deleteLink', methods=['POST'])
 def delete_link():
     if request.method == 'POST':
         link_id = request.form['id']
+        current_url = request.form['url']
         conn = sqlite3.connect('links.db')
         c = conn.cursor()
         c.execute("DELETE FROM Links WHERE LinkId = ?", (link_id,))
         conn.commit()
         conn.close()
-        return redirect("/")
+        return redirect(current_url)
     return None
 
 @updateLinkClick_bp.route('/updateLinkClick', methods=['POST'])

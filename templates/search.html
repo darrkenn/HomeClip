@@ -1,31 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>HomeClip | Search</title>
+    <title>Search</title>
     <meta charset="UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet"/>
 </head>
-<body class="flex flex-col sm:flex-row h-screen w-screen  gap-3 bg-nice-bg">
+<body onload="loadNavBar()" class="flex flex-col sm:flex-row h-screen w-screen  gap-3 bg-nice-bg">
 
-<div class="w-1/6 bg-nice-footer h-full hidden md:flex md:flex-col gap-4 items-center">
-    <a href="{{ url_for('home') }}">
-        <h1 class="text-center text-white text-4xl pt-4 font-extrabold">HomeClip</h1>
-    </a>
-    <div class=" flex flex-col items-center justify-center">
-        <form method="post" id="searchForm" onkeyup="updateAndRetrieveSearchBox()" autocomplete="off" >
-            <input class="bg-white p-1 outline-0" id="searchValue" type="text" name="searchValue" placeholder="Search:">
-        </form>
-        <ul id="searchList" class=" flex-col gap-2 items-center text-black bg-white w-full hidden"></ul>
-    </div>
-</div>
-
-<div class="min-h-1/12 bg-nice-footer w-full flex flex-row md:hidden items-center">
-    <a href="{{ url_for('home') }}">
-        <h1 class="text-left pl-4 text-white text-3xl font-extrabold hover:cursor-pointer">HomeClip</h1>
-    </a>
-</div>
 
 <div class="flex flex-col w-full justify-center  items-center">
     <div class="absolute bg-nice-footer hidden border-3 rounded-2xl border-white p-2 transition-all pointer-events-auto z-50"
@@ -70,8 +53,7 @@
                 </button>
             </div>
         </div>
-        <form method="post" action="{{ url_for('editLink.edit_link') }}" class="flex flex-col gap-2 pt-2"
-              autocomplete="off">
+        <form method="post" action="{{ url_for('editLink.edit_link') }}" class="flex flex-col gap-2 pt-2" autocomplete="off">
             <div class="flex flex-row">
                 <div class="flex flex-col w-1/4 gap-2 text-white font-bold">
                     <label class="p-0.5">Title:</label>
@@ -80,6 +62,7 @@
                 </div>
                 <div class="flex flex-col w-full gap-2 text-black">
                     <input class="hidden" type="number" id="editID" name="id">
+                    <input type="hidden" id="currentUrl" name="url" value="">
                     <input class="bg-white p-0.5" id="editTitle" type="text" name="title" placeholder="Title" required/>
                     <input class="bg-white p-0.5" id="editLink" type="text" name="link" placeholder="Link"
                            pattern="https?://.+" required/>
@@ -94,22 +77,43 @@
         </form>
     </div>
 
-<div class="flex flex-col w-full justify-center  items-center">
+    <div class="flex flex-col w-full justify-center items-center overflow-y-scroll">
 
-    <div>
-        <h1 class="text-5xl text-center text-white font-extrabold p-2">
-            Search
-        </h1>
-        <div class=" w-full min-w-160 max-w-140">
-            <div class="w-full">
-                <form method="post" id="searchForm" onkeyup="updateAndRetrieveSearchBox()" autocomplete="off" class="w-full" >
-                    <input class="bg-white w-full p-4 rounded-2xl outline-0" id="searchValue" type="text" name="searchValue" placeholder="Search:">
-                </form>
+        <div>
+            <h1 id="searchTitle" class="text-5xl text-center text-white font-extrabold p-2">
+                Search
+            </h1>
+            <div class=" w-full min-w-160 max-w-140">
+                <div class="w-full">
+                    <form method="dialog" onsubmit="navigateBigSearch()"  autocomplete="off" class="w-full" >
+                        <input class="bg-white w-full p-4 rounded-2xl outline-0" id="bigSearchValue" type="text" name="bigSearchValue" placeholder="Search:">
+                    </form>
+                </div>
             </div>
         </div>
+
+        {% if type != None %}
+            <div class="">
+                <ul id="searchListResults" class="items-center justify-center  min-w-80 max-w-80  sm:min-w-160 sm:max-w-160 flex flex-col gap-2 p-2"></ul>
+            </div>
+        {% endif  %}
+
     </div>
-
 </div>
-
 </body>
 </html>
+
+<script src="{{ url_for('static', filename='js/link.js') }}"></script>
+<script src="{{ url_for('static', filename='js/search.js') }}"></script>
+<script src="{{ url_for('static', filename='js/loadNavBar.js') }}"></script>
+<script>
+    {% if type != null %}
+        let currentUrl = document.getElementById("currentUrl").value = window.location.href
+        {% if type == "title" %}
+            document.getElementById("bigSearchValue").value = "{{ value }}"
+        {% else %}
+            document.getElementById("bigSearchValue").value = "{{ type }}: {{ value }}"
+        {% endif%}
+        retrieveBigSearchValues("{{ type }}", "{{ value }}")
+    {% endif %}
+</script>

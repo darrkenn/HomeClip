@@ -74,6 +74,7 @@ function showLinks(data) {
                     <div class="flex flex-col justify-end p-2 gap-2">
                         <form method="post" action="/api/deleteLink">
                             <input type="hidden" name="id" value="${data[i].id}">
+                            <input type="hidden" name="url" value="${window.location.href}">
                             <button type="submit" class="hover:cursor-pointer">
                                 <img src="/static/svg/deleteDark.svg" alt="Delete SVG" class="size-6">
                             </button>
@@ -97,6 +98,7 @@ function showLinks(data) {
                     <div class="flex flex-col justify-end p-2 gap-2">
                         <form method="post" action="/api/deleteLink">
                             <input type="hidden" name="id" value="${data[i].id}">
+                            <input type="hidden" name="url" value="${window.location.href}">
                             <button type="submit" class="hover:cursor-pointer">
                                 <img src="/static/svg/deleteDark.svg" alt="Delete SVG" class="size-6">
                             </button>
@@ -131,7 +133,7 @@ function cancelAddLink() {
 
 function editLink(data) {
     const editDiv = document.getElementById("editLinkForm");
-    const links = document.getElementById("listOfLinks")
+    const links = document.getElementById("searchListResults")
     if (editDiv.classList.contains("hidden")) {
         editDiv.classList.remove("hidden");
         links.classList.add("pointer-events-none")
@@ -161,86 +163,11 @@ function updateLinkClick(linkId) {
     })
 }
 
-function updateAndRetrieveSearchBox() {
-    let list = document.getElementById("searchList")
-    let sV = document.getElementById("searchValue").value;
-    if (list.classList.contains("hidden")) {
-        list.classList.remove("hidden")
-    }
-    if (sV.length > 0) {
-        if (sV.match(/tag:.*/)) {
-            let tagValue = `tag=${sV.slice(5)}`
-            retrieveSearchListValue(tagValue)
-        } else if (sV.match(/folder:.*/)) {
-            let folderValue = `folder=${sV.slice(8)}`
-            console.log(folderValue)
-            retrieveSearchListValue(folderValue)
-        } else {
-            let titleValue = `title=${sV}`
-            retrieveSearchListValue(titleValue)
-        }
-    }
-    if (sV.length === 0) {
-        list.classList.add("hidden")
-        list.innerHTML = ""
-    } else if (sV === "tag: " || sV === "folder: ") {
-        list.classList.add("hidden")
-        list.innerHTML = ""
-    }
+
+
+function testEditLink() {
+
 }
-
-function retrieveSearchListValue(value) {
-    fetch(`/api/getSearchResults/${value}`)
-        .then((response) => {
-            if (response.ok) {
-                return response.json()
-            } else {
-                throw new Error("uhoh")
-            }
-        })
-        .then((data) => {
-            let splitArray = value.split("=")
-            if (splitArray[0] === "title") {
-                updateSearchList(data, "title")
-            } else if (splitArray[0] === "tag") {
-                updateSearchList(data, "tag")
-            } else if (splitArray[0] === "folder") {
-                updateSearchList(data, "folder")
-            }
-        })
-}
-
-
-function updateSearchList(data, type) {
-    let list = document.getElementById("searchList")
-    list.innerHTML = ""
-    for (let i=0; i < data.length; i++) {
-        let li = document.createElement("li");
-        li.className = "w-full p-0.5";
-        if (type === "title") {
-            li.innerHTML = `
-                    <a href="${data[i][1]}" target="_blank">
-                    <h1>${data[i][0]}</h1>
-                    </a>
-        `;
-        } else if (type === "tag") {
-            li.innerHTML = `
-                    <a target="_blank">
-                    <h1>${data[i][0]}</h1>
-                    </a>
-        `;
-        } else if (type === "folder") {
-            console.log("hello this is working")
-            li.innerHTML = `
-                    <a target="_blank">
-                    <h1>${data[i][0]}</h1>
-                    </a>
-        `;
-        }
-        list.appendChild(li)
-    }
-}
-
 
 
 

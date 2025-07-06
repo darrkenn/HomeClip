@@ -66,31 +66,65 @@ def tag(tagId):
     except:
         abort(404)
 
-@getSearchResults_bp.route('/getSearchResults/title=<title>', methods=['GET'])
-def get_search_results_title(title):
+
+######################
+#   Preview Search   #
+######################
+@getSearchResults_bp.route('/getSearchResults/preview/title=<title>', methods=['GET'])
+def get_preview_search_results_title(title):
     conn = sqlite3.connect('links.db')
     c = conn.cursor()
-    title = f'{title}%'
+    title = f'%{title}%'
     c.execute("SELECT  Title, Link FROM Links  WHERE Title LIKE ?", (title,))
     links = c.fetchall()
     conn.close()
     return jsonify(links)
-@getSearchResults_bp.route('/getSearchResults/tag=<selectedTag>', methods=['GET'])
-def get_search_results_tag(selectedTag):
+@getSearchResults_bp.route('/getSearchResults/preview/tag=<selectedTag>', methods=['GET'])
+def get_preview_search_results_tag(selectedTag):
     conn = sqlite3.connect('links.db')
     c = conn.cursor()
-    selectedTag = f'{selectedTag}%'
+    selectedTag = f'%{selectedTag}%'
     c.execute("SELECT Tag From Tags WHERE Tag LIKE ?", (selectedTag,))
     links = c.fetchall()
     conn.close()
     return jsonify(links)
-@getSearchResults_bp.route('/getSearchResults/folder=<folder>', methods=['GET'])
-def get_search_results_folder(folder):
+@getSearchResults_bp.route('/getSearchResults/preview/folder=<folder>', methods=['GET'])
+def get_preview_search_results_folder(folder):
     conn = sqlite3.connect('links.db')
     c = conn.cursor()
-    folder = f'{folder}%'
+    folder = f'%{folder}%'
     c.execute("SELECT Folder From Folders WHERE Folder LIKE ?", (folder,))
     links = c.fetchall()
     conn.close()
     return jsonify(links)
 
+######################
+#     Full Search    #
+######################
+@getSearchResults_bp.route('/getSearchResults/full/title=<title>', methods=['GET'])
+def get_full_search_results_title(title):
+    conn = sqlite3.connect('links.db')
+    c = conn.cursor()
+    title = f'%{title}%'
+    c.execute("SELECT l.LinkId, l.Title, l.Link, t.Tag, f.Folder FROM Links as l LEFT JOIN Tags as t on l.TagId = t.TagId LEFT JOIN Folders as f on l.FolderId = f.FolderId WHERE l.Title LIKE ?", (title,))
+    links = c.fetchall()
+    conn.close()
+    return jsonify({'titles':final_links(links)})
+@getSearchResults_bp.route('/getSearchResults/full/tag=<selectedTag>', methods=['GET'])
+def get_full_search_results_tag(selectedTag):
+    conn = sqlite3.connect('links.db')
+    c = conn.cursor()
+    selectedTag = f'%{selectedTag}%'
+    c.execute("SELECT Tag FROM Tags WHERE Tag LIKE ?", (selectedTag,))
+    tags = c.fetchall()
+    conn.close()
+    return jsonify({'tags': tags})
+@getSearchResults_bp.route('/getSearchResults/full/folder=<folder>', methods=['GET'])
+def get_full_search_results_folder(folder):
+    conn = sqlite3.connect('links.db')
+    c = conn.cursor()
+    folder = f'%{folder}%'
+    c.execute("SELECT Folder FROM Folders WHERE Folder LIKE ?", (folder,))
+    folders = c.fetchall()
+    conn.close()
+    return jsonify({'folders': folders})
