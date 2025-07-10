@@ -42,8 +42,8 @@ function getLinksTop() {
         .catch((error) => console.error("Fetch error:", error));
 }
 
-function getLinkData(test) {
-    fetch(`/api/getLinkData/${test}`)
+function getLinkData(linkId) {
+    fetch(`/api/getLinkData/${linkId}`)
         .then((response) => {
             if (response.ok) {
                 return response.json();
@@ -59,6 +59,8 @@ function getLinkData(test) {
 
 function showLinks(data) {
     let list = document.getElementById("listOfLinks");
+    const current_url = window.location.pathname
+    console.log(current_url)
     for (i = 0; i < data.length; i++) {
         let li = document.createElement("li");
         li.className = "bg-stone-950 rounded-2xl w-full";
@@ -74,7 +76,7 @@ function showLinks(data) {
                     <div class="flex flex-col justify-end p-2 gap-2">
                         <form method="post" action="/api/deleteLink">
                             <input type="hidden" name="id" value="${data[i].id}">
-                            <input type="hidden" name="url" value="${window.location.href}">
+                            <input type="hidden" name="url" value="${current_url}">
                             <button type="submit" class="hover:cursor-pointer">
                                 <img src="/static/svg/deleteDark.svg" alt="Delete SVG" class="size-6">
                             </button>
@@ -98,7 +100,7 @@ function showLinks(data) {
                     <div class="flex flex-col justify-end p-2 gap-2">
                         <form method="post" action="/api/deleteLink">
                             <input type="hidden" name="id" value="${data[i].id}">
-                            <input type="hidden" name="url" value="${window.location.href}">
+                            <input type="hidden" name="url" value="${current_url}">
                             <button type="submit" class="hover:cursor-pointer">
                                 <img src="/static/svg/deleteDark.svg" alt="Delete SVG" class="size-6">
                             </button>
@@ -132,8 +134,10 @@ function cancelAddLink() {
 }
 
 function editLink(data) {
+    console.log("your here")
     const editDiv = document.getElementById("editLinkForm");
-    const links = document.getElementById("searchListResults")
+    const links = document.getElementById("listOfLinks") || document.getElementById("searchListResults")
+
     if (editDiv.classList.contains("hidden")) {
         editDiv.classList.remove("hidden");
         links.classList.add("pointer-events-none")
@@ -165,9 +169,7 @@ function updateLinkClick(linkId) {
 
 
 
-function testEditLink() {
 
-}
 
 
 

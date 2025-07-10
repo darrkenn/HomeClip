@@ -40,6 +40,7 @@ def edit_link():
         current_url = request.form['url']
         conn = sqlite3.connect('links.db')
         c = conn.cursor()
+        current_url = f'{current_url}'
         if len(tag) > 0:
             c.execute("INSERT OR IGNORE INTO Tags (TagId, Tag)  VALUES (NULL,?)", (tag,))
             c.execute("SELECT TagId From Tags WHERE Tag = ?", (tag,))
@@ -49,6 +50,8 @@ def edit_link():
             c.execute("UPDATE Links SET Title = ?, Link = ?, TagId = NULL WHERE LinkID = ?", (title, link, link_id))
         conn.commit()
         conn.close()
+        print(current_url)
+        print("im working")
         return redirect(current_url)
     return None
 

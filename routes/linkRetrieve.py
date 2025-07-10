@@ -75,7 +75,7 @@ def get_preview_search_results_title(title):
     conn = sqlite3.connect('links.db')
     c = conn.cursor()
     title = f'%{title}%'
-    c.execute("SELECT  Title, Link FROM Links  WHERE Title LIKE ?", (title,))
+    c.execute("SELECT  Title, Link FROM Links  WHERE Title LIKE ? LIMIT 3", (title,))
     links = c.fetchall()
     conn.close()
     return jsonify(links)
@@ -84,7 +84,7 @@ def get_preview_search_results_tag(selectedTag):
     conn = sqlite3.connect('links.db')
     c = conn.cursor()
     selectedTag = f'%{selectedTag}%'
-    c.execute("SELECT Tag From Tags WHERE Tag LIKE ?", (selectedTag,))
+    c.execute("SELECT Tag From Tags WHERE Tag LIKE ? LIMIT 3", (selectedTag,))
     links = c.fetchall()
     conn.close()
     return jsonify(links)
@@ -93,7 +93,7 @@ def get_preview_search_results_folder(folder):
     conn = sqlite3.connect('links.db')
     c = conn.cursor()
     folder = f'%{folder}%'
-    c.execute("SELECT Folder From Folders WHERE Folder LIKE ?", (folder,))
+    c.execute("SELECT Folder From Folders WHERE Folder LIKE ? LIMIT 3", (folder,))
     links = c.fetchall()
     conn.close()
     return jsonify(links)

@@ -45,40 +45,7 @@
         </form>
     </div>
 
-    <div class="absolute bg-nice-footer hidden border-3 rounded-2xl border-white p-2 transition-all pointer-events-auto z-50"
-         id="editLinkForm">
-        <div class="flex flex-row border-b-2 border-white w-full">
-            <div class="w-1/2"><h1 class="text-white text-2xl font-extrabold">Edit Link</h1></div>
-            <div class="w-1/2 justify-end flex">
-                <button class="text-white text-lg p-1 font-bold hover:cursor-pointer" onclick="cancelEditLink()">
-                    Cancel
-                </button>
-            </div>
-        </div>
-        <form method="post" action="{{ url_for('editLink.edit_link') }}" class="flex flex-col gap-2 pt-2"
-              autocomplete="off">
-            <div class="flex flex-row">
-                <div class="flex flex-col w-1/4 gap-2 text-white font-bold">
-                    <label class="p-0.5">Title:</label>
-                    <label class="p-0.5">Link:</label>
-                    <label class="p-0.5">Tag:</label>
-                </div>
-                <div class="flex flex-col w-full gap-2 text-black">
-                    <input class="hidden" type="number" id="editID" name="id">
-                    <input class="hidde" id="currentUrl" name="url" value="">
-                    <input class="bg-white p-0.5" id="editTitle" type="text" name="title" placeholder="Title" required/>
-                    <input class="bg-white p-0.5" id="editLink" type="text" name="link" placeholder="Link"
-                           pattern="https?://.+" required/>
-                    <input class="bg-white p-0.5" id="editTag" type="text" name="tag" placeholder="Tag">
-                </div>
-            </div>
-            <div class="flex flex-row items-center justify-center gap-1 w-full">
-                <button type="submit" class="bg-white text-black font-bold rounded-2xl p-2 hover:cursor-pointer">
-                    Submit
-                </button>
-            </div>
-        </form>
-    </div>
+
 
     <h1 class="text-5xl text-center text-white font-extrabold p-2">
         Top 5 Most Clicked Links
@@ -92,11 +59,12 @@
 <script src="{{ url_for('static', filename='js/link.js') }}"></script>
 <script src="{{ url_for('static', filename='js/search.js') }}"></script>
 <script src="{{ url_for('static', filename='js/loadNavBar.js') }}"></script>
+<script src="{{ url_for('static', filename='js/loadEditLink.js') }}"></script>
 <script>
     window.onload=function (){
-        console.log("tearsd")
         loadNavBar()
         getLinksTop()
+        loadEditLink()
     }
     let currentUrl = document.getElementById("currentUrl").value = window.location.href
 </script>
