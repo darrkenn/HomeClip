@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+@theme {
+    --color-nice-bg: #191919;
+    --color-nice-footer: #121212;
+}

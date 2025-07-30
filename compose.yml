@@ -1,0 +1,12 @@
+services:
+  homeclip:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: homeclip
+    ports:
+      - "3119:3119"
+    volumes:
+      - type: bind
+        source: /var/lib/homeclip/
+        target: /app/db/
