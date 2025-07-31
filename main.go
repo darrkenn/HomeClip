@@ -53,19 +53,22 @@ func loadApi(r *gin.Engine, db *gorm.DB) {
 		c.HTML(http.StatusOK, "", nil)
 	})
 
+	//Links
 	r.GET("/api/links/toplinks", func(c *gin.Context) {
 		var links []models.Link
-
 		result := db.Preload("Tag").Limit(5).Order("clicks desc").Find(&links)
 		if result.Error != nil {
 			log.Fatal("Cant get links: ", result.Error)
 		}
-		c.HTML(http.StatusOK, "toplinks.gohtml", gin.H{
+		c.HTML(http.StatusOK, "links.gohtml", gin.H{
 			"links": links,
 		})
 	})
 	r.POST("/api/links/addlink", func(c *gin.Context) {
 		controllers.NewLink(c, db)
+	})
+	r.POST("/api/links/delete/:linkid/:tagid", func(c *gin.Context) {
+		controllers.DeleteLink(c, db)
 	})
 }
 

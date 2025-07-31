@@ -33,10 +33,10 @@ func NewLink(c *gin.Context, db *gorm.DB) {
 		Name:  name,
 		TagId: &tag.Id,
 	}
-
-	createErr := db.Create(&newLink)
-	if createErr != nil {
-		fmt.Println("Cant create: ", createErr)
+	result := db.Create(&newLink)
+	if result.Error != nil {
+		fmt.Println("Cant create: ", result.Error)
 		return
 	}
+	c.Header("HX-REDIRECT", "/")
 }
