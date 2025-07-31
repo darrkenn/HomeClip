@@ -1,0 +1,93 @@
+<ul class="space-y-2 p-2">
+    {{range .folders}}
+            <div x-data="{ mainopen: $persist(false).as('folder_{{.Id}}') }" class="w-full text-white text-lg flex flex-col items-center">
+                <div class="flex flex-row gap-2 items-center w-full" @auxclick="window.location.href = 'folders?id={{.Id}}'" @click="mainopen = !mainopen">
+                    <div class="w-full flex flex-row items-start gap-2">
+                        <img src="/static/svg/folders/folder_{{.Colour}}.svg" alt="{{.Colour}} folder" class="size-8">
+                        <h1 class="truncate">{{.Name}}</h1>
+                    </div>
+                    <div>
+                        <template x-if="!mainopen">
+                            <img src="/static/svg/arrow_closed.svg" class="size-6" x-transition >
+                        </template>
+                        <template x-if="mainopen">
+                            <img src="/static/svg/arrow_open.svg" class="size-6" x-transition>
+                        </template>
+                    </div>
+                </div>
+                <div x-show="mainopen" x-transition class="w-full">
+                    <hr class="border w-full border-white">
+                        {{if and .Children (gt (len .Children) 0)}}
+                            <div class="flex flex-col w-full items-center pt-2 pl-4">
+                                <ul class="space-y-2 w-full">
+                                    {{range .Children}}
+                                        <li x-data="{ secondopen: $persist(false).as('folder_{{.Id}}') }">
+                                            <div class="flex flex-row gap-2 items-center" @auxclick="window.location.href = 'folders?id={{.Id}}' " @click="secondopen = !secondopen">
+                                                <div class="w-full flex flex-row items-start gap-2">
+                                                    <img src="/static/svg/folders/folder_{{.Colour}}.svg" alt="{{.Colour}} folder" class="size-8">
+                                                    <h1 class="truncate">{{.Name}}</h1>
+                                                </div>
+                                                <div>
+                                                    <template x-if="!secondopen">
+                                                        <img src="/static/svg/arrow_closed.svg" class="size-6" x-transition >
+                                                    </template>
+                                                    <template x-if="secondopen">
+                                                        <img src="/static/svg/arrow_open.svg" class="size-6" x-transition>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                            <div x-show="secondopen" x-transition class="w-full">
+                                            {{if and .Children (gt (len .Children) 0)}}
+                                                    <hr class="border w-full border-white">
+                                                    <div class="flex flex-col w-full  pt-2 pl-4">
+                                                        <ul class="space-y-2 w-full3">
+                                                            {{range .Children}}
+                                                                <li>
+                                                                    <div class="flex flex-row gap-2 items-center" @auxclick="window.location.href = 'folders?id={{.Id}}'">
+                                                                        <img src="/static/svg/folders/folder_{{.Colour}}.svg" alt="{{.Colour}} folder" class="size-8">
+                                                                        <h1 class="truncate">{{.Name}}</h1>
+                                                                    </div>
+                                                                </li>
+                                                            {{end}}
+                                                        </ul>
+                                                    </div>
+                                            {{end}}
+                                            {{if and .Links (gt (len .Links) 0)}}
+                                                <div class="flex flex-col w-full items-center pt-2 pl-4">
+                                                    <ul class="w-full">
+                                                        {{range .Links}}
+                                                            <a href="{{.Url}}" target="_blank">
+                                                                <li class="flex flex-row gap-2 items-center ">
+                                                                    <img src="/static/svg/links/link_{{.Colour}}.svg" alt="{{.Colour}} folder" class="size-8">
+                                                                    <h1 class="truncate">{{.Name}}</h1>
+                                                                </li>
+                                                            </a>
+                                                        {{end}}
+                                                    </ul>
+                                                </div>
+                                            {{end}}
+                                            </div>
+                                        </li>
+                                    {{end}}
+
+                                </ul>
+                            </div>
+                        {{end}}
+                        {{if and .Links (gt (len .Links) 0)}}
+                            <div class="flex flex-col w-full items-center pt-2 pl-4">
+                                <ul class="w-full">
+                                    {{range .Links}}
+                                        <a href="{{.Url}}" target="_blank">
+                                            <li class="flex flex-row gap-2 items-center ">
+                                                <img src="/static/svg/links/link_{{.Colour}}.svg" alt="{{.Colour}} folder" class="size-8">
+                                                <h1 class="truncate">{{.Name}}</h1>
+                                            </li>
+                                        </a>
+                                    {{end}}
+                                </ul>
+                            </div>
+                        {{end}}
+                </div>
+            </div>
+    {{end}}
+</ul>

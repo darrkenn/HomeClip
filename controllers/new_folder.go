@@ -8,27 +8,29 @@ import (
 	"strconv"
 )
 
-func NewLink(c *gin.Context, db *gorm.DB) {
+func NewFolder(c *gin.Context, db *gorm.DB) {
 	name := c.PostForm("name")
-	url := c.PostForm("link")
-	folderId := c.PostForm("folderId")
 	colour := c.PostForm("colour")
+	parentId := c.PostForm("parentId")
 
-	var folder uint
-	if folderId != "" {
-		num, err := strconv.ParseUint(folderId, 10, 64)
+	var parent uint
+	if parentId != "" {
+		num, err := strconv.ParseUint(parentId, 10, 64)
 		if err != nil {
 			fmt.Println(err)
 		}
-		folder = uint(num)
+		parent = uint(num)
+	} else {
+		parent = 0
 	}
-	newLink := models.Link{
-		Url:      url,
+
+	newFolder := models.Folder{
 		Name:     name,
-		FolderId: &folder,
 		Colour:   colour,
+		ParentId: &parent,
 	}
-	result := db.Create(&newLink)
+
+	result := db.Create(&newFolder)
 	if result.Error != nil {
 		fmt.Println("Cant create: ", result.Error)
 		return
