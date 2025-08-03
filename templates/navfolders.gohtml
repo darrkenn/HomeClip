@@ -1,18 +1,20 @@
 <ul class="space-y-2 p-2">
     {{range .folders}}
-            <div x-data="{ mainopen: $persist(false).as('folder_{{.Id}}') }" class="w-full text-white text-lg flex flex-col items-center">
-                <div class="flex flex-row gap-2 items-center w-full" @auxclick="window.location.href = 'folders?id={{.Id}}'" @click="mainopen = !mainopen">
-                    <div class="w-full flex flex-row items-start gap-2">
+            <div x-data="{ mainopen: $persist(false).as('folder_{{.Id}}_{{.Name}}') }" class="w-full text-white text-lg flex flex-col items-center">
+                <div class="flex flex-row gap-2 items-center w-full overflow-x-hidden">
+                    <div class="flex flex-row items-start gap-2 w-5/6" @click="window.location.href = 'folders?id={{.Id}}'">
                         <img src="/static/svg/folders/folder_{{.Colour}}.svg" alt="{{.Colour}} folder" class="size-8">
                         <h1 class="truncate">{{.Name}}</h1>
                     </div>
-                    <div>
+                    <div @click="mainopen = !mainopen" class="w-1/6  flex items-end justify-end">
+                        {{if or (and .Children (gt (len .Children) 0)) (gt (len .Links) 0)}}
                         <template x-if="!mainopen">
                             <img src="/static/svg/arrow_closed.svg" class="size-6" x-transition >
                         </template>
                         <template x-if="mainopen">
                             <img src="/static/svg/arrow_open.svg" class="size-6" x-transition>
                         </template>
+                        {{end}}
                     </div>
                 </div>
                 <div x-show="mainopen" x-transition class="w-full">
@@ -22,18 +24,20 @@
                                 <ul class="space-y-2 w-full">
                                     {{range .Children}}
                                         <li x-data="{ secondopen: $persist(false).as('folder_{{.Id}}') }">
-                                            <div class="flex flex-row gap-2 items-center" @auxclick="window.location.href = 'folders?id={{.Id}}' " @click="secondopen = !secondopen">
-                                                <div class="w-full flex flex-row items-start gap-2">
+                                            <div class="flex flex-row gap-2 items-center">
+                                                <div class="w-full flex flex-row items-start gap-2" @click="window.location.href = 'folders?id={{.Id}}'">
                                                     <img src="/static/svg/folders/folder_{{.Colour}}.svg" alt="{{.Colour}} folder" class="size-8">
                                                     <h1 class="truncate">{{.Name}}</h1>
                                                 </div>
-                                                <div>
+                                                <div @click="secondopen = !secondopen">
+                                                    {{if or (and .Children (gt (len .Children) 0)) (gt (len .Links) 0)}}
                                                     <template x-if="!secondopen">
                                                         <img src="/static/svg/arrow_closed.svg" class="size-6" x-transition >
                                                     </template>
                                                     <template x-if="secondopen">
                                                         <img src="/static/svg/arrow_open.svg" class="size-6" x-transition>
                                                     </template>
+                                                    {{end}}
                                                 </div>
                                             </div>
                                             <div x-show="secondopen" x-transition class="w-full">
@@ -43,7 +47,7 @@
                                                         <ul class="space-y-2 w-full3">
                                                             {{range .Children}}
                                                                 <li>
-                                                                    <div class="flex flex-row gap-2 items-center" @auxclick="window.location.href = 'folders?id={{.Id}}'">
+                                                                    <div class="flex flex-row gap-2 items-center" @click="window.location.href = 'folders?id={{.Id}}'">
                                                                         <img src="/static/svg/folders/folder_{{.Colour}}.svg" alt="{{.Colour}} folder" class="size-8">
                                                                         <h1 class="truncate">{{.Name}}</h1>
                                                                     </div>

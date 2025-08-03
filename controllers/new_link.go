@@ -11,9 +11,8 @@ import (
 func NewLink(c *gin.Context, db *gorm.DB) {
 	name := c.PostForm("name")
 	url := c.PostForm("link")
-	folderId := c.PostForm("folderId")
+	folderId := c.PostForm("FolderId")
 	colour := c.PostForm("colour")
-
 	var folder uint
 	if folderId != "" {
 		num, err := strconv.ParseUint(folderId, 10, 64)
@@ -33,5 +32,7 @@ func NewLink(c *gin.Context, db *gorm.DB) {
 		fmt.Println("Cant create: ", result.Error)
 		return
 	}
-	c.Header("HX-REDIRECT", "/")
+
+	currentUrl := fmt.Sprintf("/folders?id=%s", folderId)
+	c.Header("HX-REDIRECT", currentUrl)
 }

@@ -1,6 +1,6 @@
 <div class="bg-nice-footer border-2 rounded-2xl border-white p-2">
   <div class="flex flex-row border-b-2 border-white w-full">
-    <div class="w-1/2"><h1 class="text-white text-2xl font-extrabold">New Link</h1></div>
+    <div class="w-1/2"><h1 class="text-white text-2xl font-extrabold">Link</h1></div>
     <div class="w-1/2 justify-end flex">
       <button class="text-white text-lg p-1 font-bold hover:cursor-pointer"
               hx-get="/api/html/clear"
@@ -10,7 +10,7 @@
       >Cancel</button>
     </div>
   </div>
-  <form hx-post="/api/links/addlink" method="post" hx-swap="none" class="flex flex-col gap-2 pt-2" autocomplete="off">
+  <form hx-post="/api/links/addlink" hx-push-url="" method="post" hx-swap="none" class="flex flex-col gap-2 pt-2" autocomplete="off">
     <div class="flex flex-row">
       <div class="flex flex-col w-1/4 gap-2 text-white font-bold">
         <label class="p-0.5">Name:</label>
@@ -20,7 +20,6 @@
       <div class="flex flex-col w-full gap-2 text-black">
         <input class="bg-white p-0.5" type="text" name="name" placeholder="Name" required/>
         <input class="bg-white p-0.5" type="text" name="link" placeholder="Link" pattern="https?://.+" required/>
-        <input class="bg-white p-0.5" type="text" hidden="hidden" name="folderId" required>
         <select name="colour" type="text" class="bg-white p-0.5 text-black">
           <option value="white" selected>White</option>
           <option value="red">Red</option>
@@ -30,6 +29,7 @@
           <option value="blue">Blue</option>
           <option value="purple">Purple</option>
         </select>
+        <input hidden="hidden" value="{{.FolderId}}" type="text" name="FolderId">
       </div>
     </div>
     <div class="flex flex-row items-center justify-center gap-1 w-full">

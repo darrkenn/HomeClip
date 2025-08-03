@@ -49,19 +49,20 @@ func loadApi(r *gin.Engine, db *gorm.DB) {
 	})
 	r.GET("/api/html/newlink", func(c *gin.Context) {
 		id := c.Query("id")
-		var parent uint
+		var folder uint
 		if id != "" {
 			num, err := strconv.ParseUint(id, 10, 64)
 			if err != nil {
 				fmt.Println(err)
 			}
-			parent = uint(num)
+			folder = uint(num)
 		} else {
-			parent = 0
+			folder = 0
+			c.Redirect(http.StatusOK, "https://google.com")
 		}
 
 		c.HTML(http.StatusOK, "newlink.gohtml", gin.H{
-			"parentId": parent,
+			"FolderId": folder,
 		})
 	})
 	r.GET("/api/html/newfolder", func(c *gin.Context) {
@@ -77,7 +78,7 @@ func loadApi(r *gin.Engine, db *gorm.DB) {
 			parent = 0
 		}
 		c.HTML(http.StatusOK, "newfolder.gohtml", gin.H{
-			"parentId": parent,
+			"ParentId": parent,
 		})
 	})
 	r.GET("/api/html/clear", func(c *gin.Context) {
@@ -102,26 +103,46 @@ func loadApi(r *gin.Engine, db *gorm.DB) {
 		controllers.DeleteLink(c, db)
 	})
 	//Folders
-	r.GET("/api/folders/:purpose/:parentid", func(c *gin.Context) {
-		purpose := c.Param("purpose")
-		parentId := c.Param("parentid")
+	r.GET("/api/folders/nav/:id", func(c *gin.Context) {
+		id := c.Param("id")
 
 		var folders []models.Folder
-		result := db.Preload("Links").Preload("Children.Links").Preload("Children.Children").Where("parent_id = ?", parentId).Find(&folders)
+		result := db.Preload("Links").Preload("Children.Links").Preload("Children.Children").Where("parent_id = ?", id).Find(&folders)
 		if result.Error != nil {
 			fmt.Println("Cant get folders: ", result.Error)
 		}
 
-		if purpose == "nav" {
-			c.HTML(http.StatusOK, "navfolders.gohtml", gin.H{
+		c.HTML(http.StatusOK, "navfolders.gohtml", gin.H{
+			"folders": folders,
+		})
+	})
+	r.GET("/api/folders/contents/:id", func(c *gin.Context) {
+		id := c.Param("id")
+
+		if id == "0" {
+			var folders []models.Folder
+			var links []models.Link
+			db.Where("parent_id = 0 OR parent_id = NULL").Find(&folders)
+			db.Where("folder_id is NULL").Find(&links)
+			c.HTML(http.StatusOK, "foldercontents.gohtml", gin.H{
 				"folders": folders,
+				"links":   links,
 			})
+			return
 		}
-		if purpose == "view" {
-			c.HTML(http.StatusOK, "folderview.gohtml", gin.H{
-				"folders": folders,
-			})
+
+		var folder models.Folder
+
+		result := db.Preload("Children").Preload("Links").Where("id = ?", id).First(&folder)
+		if result.Error != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Cant find folder contents"})
+			fmt.Println("Cant find folder contents: ", result.Error)
+			return
 		}
+		c.HTML(http.StatusOK, "foldercontents.gohtml", gin.H{
+			"folders": folder.Children,
+			"links":   folder.Links,
+		})
 	})
 	r.POST("/api/folders/newFolder", func(c *gin.Context) {
 		controllers.NewFolder(c, db)
