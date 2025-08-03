@@ -1,10 +1,11 @@
 # What is HomeClip?
-Homeclip is a fast performant self-hosted link manager. It allows for the creation of links which are organized into folders.
-## Technologies
-- **Go+Gin**: Router+Api
-- **HTMX**:   Content loading
-- **Alpine**: Simple interactivity/animations
-- **Sqlite**: Performant+ ightweight database
+Homeclip is a performant, self-hosted link manager that lets you create links and organise them with folders.
+## Techn
+- **Go**
+- **Gin**
+- **HTMX**
+- **Alpine.js**
+- **Sqlite**
 
 ## Requirements
 **Docker** is required to run HomeClip.
