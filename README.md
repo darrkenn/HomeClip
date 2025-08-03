@@ -1,6 +1,6 @@
 # What is HomeClip?
 Homeclip is a performant, self-hosted link manager that lets you create links and organise them with folders.
-## Techn
+## Technologies
 - **Go**
 - **Gin**
 - **HTMX**
@@ -29,3 +29,4 @@ docker compose up
 
 
 ![HackaTime Badge](https://hackatime-badge.hackclub.com/U092R8UPA6L/HomeClip)
+
