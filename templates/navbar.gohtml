@@ -4,13 +4,6 @@
     </a>
 
     <div class=" h-full w-full  hidden sm:flex flex-col">
-        <div class="relative px-2 w-full">
-            <a href="/folders" target="_self">
-                <h1 class="text-3xl text-center text-white font-bold">Folders</h1>
-            </a>
-        </div>
-        <div class="h-full pt-4 overflow-y-scroll" hx-get="/api/folders/nav/0" hx-trigger="load" hx-target="this" hx-swap="innerHTML">
-
-        </div>
+        <div class="h-full pt-4 overflow-y-scroll" hx-get="/api/folders/nav/0" hx-trigger="load" hx-target="this" hx-swap="innerHTML"></div>
     </div>
 </div>

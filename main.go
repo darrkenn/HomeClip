@@ -4,15 +4,16 @@ import (
 	"HomeClip/controllers"
 	"HomeClip/models"
 	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"log"
 	_ "modernc.org/sqlite"
-	"net/http"
-	"os"
-	"strconv"
 )
 
 func main() {
@@ -65,6 +66,14 @@ func loadApi(r *gin.Engine, db *gorm.DB) {
 			"FolderId": folder,
 		})
 	})
+	r.GET("/api/html/editlink", func(c *gin.Context) {
+		id := c.Query("id")
+		folderId := c.Query("folderId")
+		c.HTML(http.StatusOK, "editLink.gohtml", gin.H{
+			"Id":       id,
+			"FolderId": folderId,
+		})
+	})
 	r.GET("/api/html/newfolder", func(c *gin.Context) {
 		id := c.Query("id")
 		var parent uint
@@ -79,6 +88,12 @@ func loadApi(r *gin.Engine, db *gorm.DB) {
 		}
 		c.HTML(http.StatusOK, "newfolder.gohtml", gin.H{
 			"ParentId": parent,
+		})
+	})
+	r.GET("/api/html/delete", func(c *gin.Context) {
+		id := c.Query("id")
+		c.HTML(http.StatusOK, "delete.gohtml", gin.H{
+			"id": id,
 		})
 	})
 	r.GET("/api/html/clear", func(c *gin.Context) {
@@ -123,7 +138,7 @@ func loadApi(r *gin.Engine, db *gorm.DB) {
 			var folders []models.Folder
 			var links []models.Link
 			db.Where("parent_id = 0 OR parent_id = NULL").Find(&folders)
-			db.Where("folder_id is NULL").Find(&links)
+			db.Where("folder_id =0 OR folder_id is NULL").Find(&links)
 			c.HTML(http.StatusOK, "foldercontents.gohtml", gin.H{
 				"folders": folders,
 				"links":   links,
@@ -147,16 +162,16 @@ func loadApi(r *gin.Engine, db *gorm.DB) {
 	r.POST("/api/folders/newFolder", func(c *gin.Context) {
 		controllers.NewFolder(c, db)
 	})
+	r.POST("/api/folders/deleteFolder", func(c *gin.Context) {
+		controllers.DeleteFolder(c, db)
+	})
 }
 
 func loadPages(r *gin.Engine, db *gorm.DB) {
-	r.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "homepage.html", nil)
-	})
 	r.GET("/search", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "search.html", nil)
 	})
-	r.GET("/folders", func(c *gin.Context) {
+	r.GET("/", func(c *gin.Context) {
 		id := c.Query("id")
 		var folderId uint
 		var folder models.Folder

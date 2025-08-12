@@ -15,5 +15,4 @@ func DeleteLink(c *gin.Context, db *gorm.DB) {
 		fmt.Println("Cant delete link: ", linkDeleteErr.Error)
 	}
 	fmt.Println("Deleted link")
-
 }

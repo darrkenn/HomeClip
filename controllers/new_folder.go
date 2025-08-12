@@ -35,5 +35,6 @@ func NewFolder(c *gin.Context, db *gorm.DB) {
 		fmt.Println("Cant create: ", result.Error)
 		return
 	}
-	c.Header("HX-REDIRECT", "/")
+	currentUrl := fmt.Sprintf("?id=%s", parentId)
+	c.Header("HX-REDIRECT", currentUrl)
 }

@@ -33,6 +33,6 @@ func NewLink(c *gin.Context, db *gorm.DB) {
 		return
 	}
 
-	currentUrl := fmt.Sprintf("/folders?id=%s", folderId)
+	currentUrl := fmt.Sprintf("?id=%s", folderId)
 	c.Header("HX-REDIRECT", currentUrl)
 }

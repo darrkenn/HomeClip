@@ -2,7 +2,7 @@
     {{range .folders}}
             <div x-data="{ mainopen: $persist(false).as('folder_{{.Id}}_{{.Name}}') }" class="w-full text-white text-lg flex flex-col items-center">
                 <div class="flex flex-row gap-2 items-center w-full overflow-x-hidden">
-                    <div class="flex flex-row items-start gap-2 w-5/6" @click="window.location.href = 'folders?id={{.Id}}'">
+                    <div class="flex flex-row items-start gap-2 w-5/6" @click="window.location.href = '?id={{.Id}}'">
                         <img src="/static/svg/folders/folder_{{.Colour}}.svg" alt="{{.Colour}} folder" class="size-8">
                         <h1 class="truncate">{{.Name}}</h1>
                     </div>
@@ -25,7 +25,7 @@
                                     {{range .Children}}
                                         <li x-data="{ secondopen: $persist(false).as('folder_{{.Id}}') }">
                                             <div class="flex flex-row gap-2 items-center">
-                                                <div class="w-full flex flex-row items-start gap-2" @click="window.location.href = 'folders?id={{.Id}}'">
+                                                <div class="w-full flex flex-row items-start gap-2" @click="window.location.href = '?id={{.Id}}'">
                                                     <img src="/static/svg/folders/folder_{{.Colour}}.svg" alt="{{.Colour}} folder" class="size-8">
                                                     <h1 class="truncate">{{.Name}}</h1>
                                                 </div>
@@ -47,7 +47,7 @@
                                                         <ul class="space-y-2 w-full3">
                                                             {{range .Children}}
                                                                 <li>
-                                                                    <div class="flex flex-row gap-2 items-center" @click="window.location.href = 'folders?id={{.Id}}'">
+                                                                    <div class="flex flex-row gap-2 items-center" @click="window.location.href = '?id={{.Id}}'">
                                                                         <img src="/static/svg/folders/folder_{{.Colour}}.svg" alt="{{.Colour}} folder" class="size-8">
                                                                         <h1 class="truncate">{{.Name}}</h1>
                                                                     </div>

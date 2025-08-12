@@ -1,23 +1,34 @@
-<div class="w-full h-full flex flex-row space-x-12 space-y-4 p-4">
-    {{range .folders}}
-        <a class="flex flex-col items-center justify-between w-40 h-40 p-4 hover:opacity-80 transition-opacity duration-200" href="/folders?id={{.Id}}">
-            <div class="flex-shrink-0 mb-2">
-                <img src="/static/svg/folders/folder_{{.Colour}}.svg" class="w-16 h-16" alt="{{.Name}} folder">
-            </div>
-            <div class="flex-1 flex items-start justify-center min-h-0 w-full">
-                <h1 class="text-white text-base font-medium text-center leading-tight break-words line-clamp-2">{{.Name}}</h1>
-            </div>
-        </a>
-    {{end}}
-
-    {{range .links}}
-        <a class="flex flex-col items-center justify-between w-40 h-40 p-4 hover:opacity-80 transition-opacity duration-200" href="{{.Url}}">
-            <div class="flex-shrink-0 mb-2">
-                <img src="/static/svg/links/link_{{.Colour}}.svg" class="w-16 h-16" alt="{{.Name}} icon">
-            </div>
-            <div class="flex-1 flex items-start justify-center min-h-0 w-full">
-                <h1 class="text-white text-base font-medium text-center leading-tight break-words line-clamp-2">{{.Name}}</h1>
-            </div>
-        </a>
-    {{end}}
+<div class="h-full w-full overflow-auto p-4">
+    <div class="flex flex-wrap w-full justify-start items-start content-start">
+        {{range .folders}}
+            <a class="flex flex-col items-center p-4"
+               style="width: 200px; height: 180px; flex: 0 0 200px;"
+               href="?id={{.Id}}">
+                <div class="flex-shrink-0">
+                    <img src="/static/svg/folders/folder_{{.Colour}}.svg" class="w-20 h-20" alt="{{.Name}} folder">
+                </div>
+                <div class="flex items-center justify-center w-full">
+                    <h1 class="text-white text-base font-medium text-center leading-tight break-words line-clamp-2">{{.Name}}</h1>
+                </div>
+            </a>
+        {{end}}
+        {{range .links}}
+            <a class="flex flex-col items-center p-4"
+               style="width: 200px; height: 180px; flex: 0 0 200px;"
+               href="{{.Url}}"
+               hx-get="/api/html/editlink"
+               hx-trigger="contextmenu"
+               oncontextmenu="event.preventDefault();"
+               hx-target="#new"
+               hx-swap="innerHTML"
+            >
+                <div class="flex-shrink-0">
+                    <img src="/static/svg/links/link_{{.Colour}}.svg" class="w-20 h-20" alt="{{.Name}} icon">
+                </div>
+                <div class="flex items-center justify-center w-full">
+                    <h1 class="text-white text-base font-medium text-center leading-tight break-words line-clamp-2">{{.Name}}</h1>
+                </div>
+            </a>
+        {{end}}
+    </div>
 </div>
