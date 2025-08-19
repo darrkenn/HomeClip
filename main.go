@@ -68,10 +68,19 @@ func loadApi(r *gin.Engine, db *gorm.DB) {
 	})
 	r.GET("/api/html/editlink", func(c *gin.Context) {
 		id := c.Query("id")
-		folderId := c.Query("folderId")
+		num, err := strconv.ParseUint(id, 10, 64)
+		if err != nil {
+			fmt.Println(err)
+		}
+		linkId := uint(num)
+
+		var link models.Link
+		db.First(&link, linkId)
 		c.HTML(http.StatusOK, "editLink.gohtml", gin.H{
-			"Id":       id,
-			"FolderId": folderId,
+			"name":   link.Name,
+			"colour": link.Colour,
+			"url":    link.Url,
+			"id":     link.Id,
 		})
 	})
 	r.GET("/api/html/newfolder", func(c *gin.Context) {
@@ -88,6 +97,22 @@ func loadApi(r *gin.Engine, db *gorm.DB) {
 		}
 		c.HTML(http.StatusOK, "newfolder.gohtml", gin.H{
 			"ParentId": parent,
+		})
+	})
+	r.GET("/api/html/editfolder", func(c *gin.Context) {
+		id := c.Query("id")
+		num, err := strconv.ParseUint(id, 10, 64)
+		if err != nil {
+			fmt.Println(err)
+		}
+		folderId := uint(num)
+
+		var folder models.Folder
+		db.First(&folder, folderId)
+		c.HTML(http.StatusOK, "editFolder.gohtml", gin.H{
+			"name":   folder.Name,
+			"colour": folder.Colour,
+			"id":     folder.Id,
 		})
 	})
 	r.GET("/api/html/delete", func(c *gin.Context) {
@@ -114,7 +139,10 @@ func loadApi(r *gin.Engine, db *gorm.DB) {
 	r.POST("/api/links/addlink", func(c *gin.Context) {
 		controllers.NewLink(c, db)
 	})
-	r.POST("/api/links/delete/:linkid", func(c *gin.Context) {
+	r.POST("/api/links/editlink", func(c *gin.Context) {
+		controllers.EditLink(c, db)
+	})
+	r.DELETE("/api/links/delete", func(c *gin.Context) {
 		controllers.DeleteLink(c, db)
 	})
 	//Folders
@@ -162,7 +190,10 @@ func loadApi(r *gin.Engine, db *gorm.DB) {
 	r.POST("/api/folders/newFolder", func(c *gin.Context) {
 		controllers.NewFolder(c, db)
 	})
-	r.POST("/api/folders/deleteFolder", func(c *gin.Context) {
+	r.POST("/api/folders/editfolder", func(c *gin.Context) {
+		controllers.EditFolder(c, db)
+	})
+	r.DELETE("/api/folders/delete", func(c *gin.Context) {
 		controllers.DeleteFolder(c, db)
 	})
 }
@@ -205,6 +236,7 @@ func loadPages(r *gin.Engine, db *gorm.DB) {
 }
 
 func databaseSetup(dbLocation string) *gorm.DB {
+
 	db, dbErr := gorm.Open(sqlite.Open(dbLocation), &gorm.Config{})
 	if dbErr != nil {
 		fmt.Println(dbLocation)

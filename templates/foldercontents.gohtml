@@ -3,7 +3,13 @@
         {{range .folders}}
             <a class="flex flex-col items-center p-4"
                style="width: 200px; height: 180px; flex: 0 0 200px;"
-               href="?id={{.Id}}">
+               href="?id={{.Id}}"
+               hx-get="/api/html/editfolder?id={{.Id}}"
+               hx-trigger="contextmenu"
+               oncontextmenu="event.preventDefault();"
+               hx-target="#new"
+               hx-swap="innerHTML"
+            >
                 <div class="flex-shrink-0">
                     <img src="/static/svg/folders/folder_{{.Colour}}.svg" class="w-20 h-20" alt="{{.Name}} folder">
                 </div>
@@ -16,7 +22,7 @@
             <a class="flex flex-col items-center p-4"
                style="width: 200px; height: 180px; flex: 0 0 200px;"
                href="{{.Url}}"
-               hx-get="/api/html/editlink"
+               hx-get="/api/html/editlink?id={{.Id}}"
                hx-trigger="contextmenu"
                oncontextmenu="event.preventDefault();"
                hx-target="#new"

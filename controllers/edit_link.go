@@ -10,8 +10,11 @@ import (
 	"gorm.io/gorm"
 )
 
-func DeleteLink(c *gin.Context, db *gorm.DB) {
-	id := c.Query("id")
+func EditLink(c *gin.Context, db *gorm.DB) {
+	name := c.PostForm("name")
+	url := c.PostForm("link")
+	id := c.PostForm("id")
+	colour := c.PostForm("colour")
 
 	num, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
@@ -19,10 +22,15 @@ func DeleteLink(c *gin.Context, db *gorm.DB) {
 	}
 	linkId := uint(num)
 
-	linkDeleteErr := db.Where("Id = ?", linkId).Delete(&models.Link{})
-	if linkDeleteErr.Error != nil {
-		fmt.Println("Cant delete link: ", linkDeleteErr.Error)
-	}
+	var link models.Link
+	db.First(&link, linkId)
+
+	link.Name = name
+	link.Url = url
+	link.Colour = colour
+
+	db.Save(&link)
+
 	c.Header("HX-Redirect", c.Request.Referer())
 	c.Status(http.StatusOK)
 }

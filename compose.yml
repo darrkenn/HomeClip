@@ -8,5 +8,5 @@ services:
       - "3119:3119"
     volumes:
       - type: bind
-        source: /var/lib/homeclip/ #Change to wherever you would like
+        source: /var/lib/homeclip/
         target: /app/db/

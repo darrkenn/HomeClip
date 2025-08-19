@@ -35,11 +35,6 @@
       <button hx-get="/api/html/newfolder?id={{.FolderId}}" hx-trigger="click" hx-swap="innerHTML" hx-target="#new">
         <img src="/static/svg/folders/newFolder.svg" class="w-8 h-8" alt="new folder"></button>
       </button>
-      {{if .ParentId}}
-        <button hx-get="/api/html/delete?reason=folder&id={{.FolderId}}" hx-trigger="click" hx-swap="innerHTML" hx-target="#new">
-          <img src="/static/svg/folders/delFolder.svg" class="w-8 h-8" alt="delete folder"></button>
-        </button>
-      {{end}}
     </div>
   </div>
   <div id="contents" class="w-full">

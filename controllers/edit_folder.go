@@ -10,8 +10,11 @@ import (
 	"gorm.io/gorm"
 )
 
-func DeleteFolder(c *gin.Context, db *gorm.DB) {
-	id := c.Query("id")
+func EditFolder(c *gin.Context, db *gorm.DB) {
+	name := c.PostForm("name")
+	id := c.PostForm("id")
+	//parentId := c.PostForm("parentId")
+	colour := c.PostForm("colour")
 
 	num, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
@@ -19,10 +22,14 @@ func DeleteFolder(c *gin.Context, db *gorm.DB) {
 	}
 	folderId := uint(num)
 
-	folderDeleteErr := db.Where("Id = ?", folderId).Delete(&models.Folder{})
-	if folderDeleteErr.Error != nil {
-		fmt.Println("Cant delete folder: ", folderDeleteErr.Error)
-	}
+	var folder models.Folder
+	db.First(&folder, folderId)
+
+	folder.Name = name
+	folder.Colour = colour
+
+	db.Save(&folder)
+
 	c.Header("HX-Redirect", c.Request.Referer())
 	c.Status(http.StatusOK)
 }
